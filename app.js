@@ -6,12 +6,6 @@ require('dotenv').config();
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
-// Connect to Kafka
-connectProducer().catch(console.error);
-
 // Middleware
 app.use(express.json());
 
@@ -27,7 +21,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -36,7 +29,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`User Service running on port ${PORT}`);
-});
+module.exports = app; 
+
+if (process.env.NODE_ENV !== 'test') {
+  const startServer = async () => {
+    await connectDB();
+    await connectProducer().catch(console.error);
+    
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+      console.log(`User Service running on port ${PORT}`);
+    });
+  };
+  
+  startServer();
+}
