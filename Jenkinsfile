@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
-        dockerTool 'Docker'
+        docker 'Docker'
     }
 
     environment {
@@ -37,11 +37,6 @@ pipeline {
                     sh 'npm test --runInBand --forceExit'
                 }
             }
-        }
-
-        stage('Initialize'){
-            def dockerHome = tool 'Docker'
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
         }
 
         stage('Docker Build & Push') {
