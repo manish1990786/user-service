@@ -107,7 +107,6 @@ services:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
       - JENKINS_OPTS=--prefix=/jenkins
 
-
 volumes:
   kafka_data:
     driver: local

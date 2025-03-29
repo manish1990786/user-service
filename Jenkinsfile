@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'Slave-Node' }
+    agent any
 
     environment {
         DOCKER_IMAGE = "manish1990786/user-service:latest"
