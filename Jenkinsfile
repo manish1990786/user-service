@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS 16'  // Must match the name in Global Tool Configuration
+    }
+
     environment {
         DOCKER_IMAGE = "manish1990786/user-service:latest"
     }
