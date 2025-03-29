@@ -91,8 +91,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: unless-stopped
+    privileged: true
+    user: root
+    ports:
+      - "8085:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - JENKINS_OPTS=--prefix=/jenkins
+
+
 volumes:
   kafka_data:
     driver: local
   mongo_data:
+    driver: local
+  jenkins_home:
     driver: local
