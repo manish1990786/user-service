@@ -39,6 +39,14 @@ pipeline {
             }
         }
 
+        stage('Retrieve .env from Jenkins') {
+            steps {
+                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+                    sh 'cp $ENV_FILE .env'
+                }
+            }
+        }
+
         stage('Docker Build & Push') {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
