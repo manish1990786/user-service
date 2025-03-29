@@ -75,7 +75,7 @@ pipeline {
                     sh "docker rm staging || true"
 
                     echo "Running Staging environment on port 3001..."
-                    sh "docker run -d --name staging -p 3001:3000 ${DOCKER_IMAGE}"
+                    sh "docker run -d --name staging -p 3001:3001 ${DOCKER_IMAGE}"
                 }
             }
         }
@@ -92,7 +92,7 @@ pipeline {
                     sh "docker rm production || true"
 
                     echo "Running Production environment on port 3002..."
-                    sh "docker run -d --name production -p 3002:3000 ${DOCKER_IMAGE}"
+                    sh "docker run -d --name production -p 3002:3001 ${DOCKER_IMAGE}"
                 }
             }
         }
