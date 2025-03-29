@@ -10,11 +10,6 @@ pipeline {
         DOCKER_IMAGE = "manish1990786/user-service:latest"
     }
 
-    stage('Initialize'){
-        def dockerHome = tool 'Docker'
-        env.PATH = "${dockerHome}/bin:${env.PATH}"
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -42,6 +37,11 @@ pipeline {
                     sh 'npm test --runInBand --forceExit'
                 }
             }
+        }
+
+        stage('Initialize'){
+            def dockerHome = tool 'Docker'
+            env.PATH = "${dockerHome}/bin:${env.PATH}"
         }
 
         stage('Docker Build & Push') {
