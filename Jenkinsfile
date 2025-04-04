@@ -12,63 +12,63 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                script {
-                    def branchName = env.BRANCH_NAME ?: 'main'
-                    echo "Building branch: ${branchName}"
-                    git branch: branchName, url: 'https://github.com/manish1990786/user-service'
-                }
-            }
-        }
+        // stage('Checkout Code') {
+        //     steps {
+        //         script {
+        //             def branchName = env.BRANCH_NAME ?: 'main'
+        //             echo "Building branch: ${branchName}"
+        //             git branch: branchName, url: 'https://github.com/manish1990786/user-service'
+        //         }
+        //     }
+        // }
 
-        stage('Build') {
-            steps {
-                retry(2) {
-                    script {
-                        sh 'npm install'
-                    }
-                }
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         retry(2) {
+        //             script {
+        //                 sh 'npm install'
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Test') {
-            steps {
-                script {
-                    sh 'npm test --runInBand --forceExit'
-                }
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         script {
+        //             sh 'npm test --runInBand --forceExit'
+        //         }
+        //     }
+        // }
 
-        stage('Retrieve .env from Jenkins') {
-            steps {
-                withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
-                    sh 'cp $ENV_FILE .env'
-                }
-            }
-        }
+        // stage('Retrieve .env from Jenkins') {
+        //     steps {
+        //         withCredentials([file(credentialsId: 'env-file', variable: 'ENV_FILE')]) {
+        //             sh 'cp $ENV_FILE .env'
+        //         }
+        //     }
+        // }
 
-        stage('Docker Build & Push') {
-            when { expression { env.BRANCH_NAME == 'main' } }
-            steps {
-                retry(2) {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
-                        usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                            sh "docker build -t ${DOCKER_IMAGE} ."
-                            sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-                            sh "docker push ${DOCKER_IMAGE}"
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Docker Build & Push') {
+        //     when { expression { env.BRANCH_NAME == 'main' } }
+        //     steps {
+        //         retry(2) {
+        //             script {
+        //                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
+        //                 usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        //                     sh "docker build -t ${DOCKER_IMAGE} ."
+        //                     sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+        //                     sh "docker push ${DOCKER_IMAGE}"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Deploy to Minikube') {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh "kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    sh "./kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
                 }
             }
@@ -78,7 +78,7 @@ pipeline {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh "kubectl expose deployment user-service --type=NodePort --port=3001"
+                    sh "./kubectl expose deployment user-service --type=NodePort --port=3001"
                 }
             }
         }
