@@ -68,30 +68,15 @@ pipeline {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    sh 'eval $(minikube docker-env)'
+                    sh "kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    kubernetesCli(script: 'kubectl apply -f deployment.yaml')
                     echo "Deployment applied successfully"
-                }
-            }
-        }
-
-        stage('Expose Service') {
-            when { expression { env.BRANCH_NAME == 'main' } }
-            steps {
-                script {
-                    sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
-                }
-            }
-        }
-
-        stage('Get Service URL') {
-            when { expression { env.BRANCH_NAME == 'main' } }
-            steps {
-                script {
+                    sh "kubectl expose deployment user-service --type=NodePort --port=3001"
                     sh "minikube service user-service --url"
                 }
             }
         }
-
     }
 
     post {
