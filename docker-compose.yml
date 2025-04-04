@@ -103,6 +103,10 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - C:/Users/Manish/.kube:/root/.kube
+      - C:/Users/Manish/.minikube:/root/.minikube
+      - C:/ProgramData/chocolatey/bin/minikube.exe:/usr/local/bin/minikube
+      - C:/ProgramData/chocolatey/bin/kubectl.exe:/usr/local/bin/kubectl
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
 
