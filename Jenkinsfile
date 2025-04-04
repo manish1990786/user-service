@@ -68,7 +68,7 @@ pipeline {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh "./kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
                 }
             }
@@ -78,7 +78,7 @@ pipeline {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    sh "./kubectl expose deployment user-service --type=NodePort --port=3001"
+                    sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
                 }
             }
         }
