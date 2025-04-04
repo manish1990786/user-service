@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "manish1990786/user-service:latest"
+        KUBE_DEPLOYMENT = "deployment.yaml"
     }
 
     stages {
@@ -63,39 +64,34 @@ pipeline {
             }
         }
 
-        stage('Deploy to Staging') {
+        stage('Deploy to Minikube') {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    echo "Pulling latest image from Docker Hub for Staging..."
-                    sh "docker pull ${DOCKER_IMAGE}"
-
-                    echo "Stopping existing Staging container if running..."
-                    sh "docker stop staging || true"
-                    sh "docker rm staging || true"
-
-                    echo "Running Staging environment on port 3001..."
-                    sh "docker run -d --name staging -p 3001:3001 ${DOCKER_IMAGE}"
+                    sh "kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    echo "Deployment applied successfully"
                 }
             }
         }
 
-        stage('Deploy to Production') {
+        stage('Expose Service') {
             when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 script {
-                    echo "Pulling latest image from Docker Hub for Production..."
-                    sh "docker pull ${DOCKER_IMAGE}"
-
-                    echo "Stopping existing Production container if running..."
-                    sh "docker stop production || true"
-                    sh "docker rm production || true"
-
-                    echo "Running Production environment on port 3002..."
-                    sh "docker run -d --name production -p 3002:3001 ${DOCKER_IMAGE}"
+                    sh "kubectl expose deployment user-service --type=NodePort --port=3001"
                 }
             }
         }
+
+        stage('Get Service URL') {
+            when { expression { env.BRANCH_NAME == 'main' } }
+            steps {
+                script {
+                    sh "minikube service user-service --url"
+                }
+            }
+        }
+
     }
 
     post {
