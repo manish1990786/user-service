@@ -12,15 +12,15 @@ pipeline {
     }
 
     stages {
-        // stage('Checkout Code') {
-        //     steps {
-        //         script {
-        //             def branchName = env.BRANCH_NAME ?: 'main'
-        //             echo "Building branch: ${branchName}"
-        //             git branch: branchName, url: 'https://github.com/manish1990786/user-service'
-        //         }
-        //     }
-        // }
+        stage('Checkout Code') {
+            steps {
+                script {
+                    def branchName = env.BRANCH_NAME ?: 'main'
+                    echo "Building branch: ${branchName}"
+                    git branch: branchName, url: 'https://github.com/manish1990786/user-service'
+                }
+            }
+        }
 
         // stage('Build') {
         //     steps {
@@ -65,7 +65,7 @@ pipeline {
         // }
 
         stage('Deploy to Minikube') {
-            when { expression { env.BRANCH_NAME == 'main' } }
+            when { expression { env.BRANCH_NAME == 'test' } }
             steps {
                 script {
                     sh 'export KUBECONFIG=/root/.kube/config' 
