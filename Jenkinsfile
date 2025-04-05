@@ -65,6 +65,7 @@ pipeline {
         // }
 
         stage('Deploy to Minikube') {
+            when { expression { env.BRANCH_NAME == 'test' } }
             steps {
                 script {
                     sh 'export KUBECONFIG=/root/.kube/config' 
