@@ -69,13 +69,13 @@ pipeline {
             steps {
                 script {
                     sh 'export KUBECONFIG=/root/.kube/config' 
-                    // sh '/usr/local/bin/minikube status'
-                    sh 'kubectl cluster-info'
-                    // sh 'eval $(minikube docker-env) && echo "Docker environment set"'
-                    sh "kubectl apply -f ${KUBE_DEPLOYMENT}"
+                    sh '/usr/local/bin/minikube status'
+                    sh '/usr/local/bin/kubectl cluster-info'
+                    sh 'eval $(/usr/local/bin/minikube docker-env) && echo "Docker environment set"'
+                    sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
-                    sh "kubectl expose deployment user-service --type=NodePort --port=3001"
-                    // sh "minikube service user-service --url"
+                    sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
+                    sh "/usr/local/bin/minikube service user-service --url"
                 }
             }
         }
