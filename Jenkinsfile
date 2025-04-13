@@ -49,7 +49,6 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            when { expression { env.BRANCH_NAME == 'main' } }
             steps {
                 retry(2) {
                     script {
@@ -70,6 +69,7 @@ pipeline {
                 script {
                     sh 'export KUBECONFIG=/root/.kube/config' 
                     sh '/usr/local/bin/kubectl cluster-info'
+                    sh '/usr/local/bin/kubectl delete service user-service || true'
                     sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
                     sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
