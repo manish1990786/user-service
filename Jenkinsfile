@@ -72,7 +72,7 @@ pipeline {
                     sh '/usr/local/bin/kubectl delete service user-service || true'
                     sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
-                    sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
+                    sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001 || true"
                 }
             }
         }
