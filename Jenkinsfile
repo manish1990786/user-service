@@ -22,23 +22,23 @@ pipeline {
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         retry(2) {
-        //             script {
-        //                 sh 'npm install'
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build') {
+            steps {
+                retry(2) {
+                    script {
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
 
-        // stage('Test') {
-        //     steps {
-        //         script {
-        //             sh 'npm test --runInBand --forceExit'
-        //         }
-        //     }
-        // }
+        stage('Test') {
+            steps {
+                script {
+                    sh 'npm test --runInBand --forceExit'
+                }
+            }
+        }
 
         stage('Retrieve .env from Jenkins') {
             steps {
@@ -48,34 +48,31 @@ pipeline {
             }
         }
 
-        // stage('Docker Build & Push') {
-        //     when { expression { env.BRANCH_NAME == 'main' } }
-        //     steps {
-        //         retry(2) {
-        //             script {
-        //                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
-        //                 usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-        //                     sh "docker build -t ${DOCKER_IMAGE} ."
-        //                     sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-        //                     sh "docker push ${DOCKER_IMAGE}"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Docker Build & Push') {
+            when { expression { env.BRANCH_NAME == 'main' } }
+            steps {
+                retry(2) {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
+                        usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                            sh "docker build -t ${DOCKER_IMAGE} ."
+                            sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+                            sh "docker push ${DOCKER_IMAGE}"
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Deploy to Minikube') {
             when { expression { env.BRANCH_NAME == 'test' } }
             steps {
                 script {
                     sh 'export KUBECONFIG=/root/.kube/config' 
-                    // sh '/usr/local/bin/minikube status'
                     sh '/usr/local/bin/kubectl cluster-info'
-                    // sh 'eval $(/usr/local/bin/minikube docker-env) && echo "Docker environment set"'
                     sh "/usr/local/bin/kubectl apply -f ${KUBE_DEPLOYMENT}"
                     echo "Deployment applied successfully"
                     sh "/usr/local/bin/kubectl expose deployment user-service --type=NodePort --port=3001"
-                    // sh "/usr/local/bin/minikube service user-service --url"
                 }
             }
         }
