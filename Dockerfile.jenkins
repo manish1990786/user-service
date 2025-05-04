@@ -1,0 +1,30 @@
+FROM jenkins/jenkins:lts
+USER root
+
+RUN apt-get update && apt-get install -y curl
+
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+RUN curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
+    install minikube-linux-amd64 /usr/local/bin/minikube && \
+    rm minikube-linux-amd64
+
+COPY --chown=jenkins:jenkins ./jenkins-plugins.txt /usr/share/jenkins/plugins.txt
+RUN jenkins-plugin-cli -f /usr/share/jenkins/plugins.txt
+
+COPY jenkins.yaml /var/jenkins_home/jenkins.yaml
+
+COPY .env /var/jenkins_home/.env
+
+ENV JAVA_OPTS -Djenkins.install.runSetupWizard=true
+
+ENV CASC_JENKINS_CONFIG /var/jenkins_home/jenkins.yaml
+
+ENV ENV_FILE_CONTENT /var/jenkins_home/.env
+
+RUN echo "admin:admin" > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state
+
+RUN mkdir -p /var/jenkins_home/secrets && \
+echo "admin" > /var/jenkins_home/secrets/initialAdminPassword && \
+chown jenkins:jenkins /var/jenkins_home/secrets/initialAdminPassword

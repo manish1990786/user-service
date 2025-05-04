@@ -1,0 +1,81 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+       - id: "admin"
+         name: "Admin User"
+         password: "admin"
+  authorizationStrategy:
+      loggedInUsersCanDoAnything:
+        allowAnonymousRead: false
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "docker-hub-credentials"
+              username: "${DOCKER_USERNAME}"
+              password: "${DOCKER_PASSWORD}"
+              description: "Docker Hub Credentials"
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-credentials"
+              username: "${GITHUB_USERNAME}"
+              password: "${GITHUB_TOKEN}"
+              description: "GitHub Credentials"
+          - file:
+              scope: GLOBAL
+              id: "env-file"
+              fileName: ".env"
+              secretBytes: "${readFileBase64:/var/jenkins_home/.env}"
+
+tool:
+  nodejs:
+    installations:
+      - name: "NodeJS"
+        home: ""
+        properties:
+          - installSource:
+              installers:
+                - nodeJSInstaller:
+                    id: "16.0.0"
+                    npmPackagesRefreshHours: 48
+  dockerTool:
+    installations:
+      - name: "Docker"
+        properties:
+          - installSource:
+              installers:
+                - fromDocker:
+                    version: "20.10.17"
+                    label: ""
+
+unclassified:
+  location:
+    url: "http://localhost:8085/"
+
+jobs:
+  - script: >
+      pipelineJob('user-service-pipeline') {
+        parameters {
+          stringParam('BRANCH_NAME', 'main', 'Git branch to build')
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/manish1990786/user-service')
+                  credentials('github-credentials')
+                }
+                branches('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+          }
+        }
+      }
