@@ -17,8 +17,7 @@ A robust and scalable microservice for managing users, built with an event-drive
 
 ## Architecture
 
-![image](https://github.com/user-attachments/assets/cbb562d6-9974-4543-a29e-77397d964453)
-
+![scalable-services-assignment](https://github.com/user-attachments/assets/ed02e02c-028e-4cba-84a3-96af69f50516)
 
 ## Tech Stack
 
