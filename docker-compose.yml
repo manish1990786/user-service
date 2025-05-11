@@ -83,9 +83,9 @@ services:
       ME_CONFIG_SITE_BASEURL: "/"
       ME_CONFIG_SITE_COOKIESECRET: "secret"
       ME_CONFIG_SITE_SESSIONSECRET: "secret"
-    depends_on:
-      mongodb:
-        condition: service_healthy
+    # depends_on:
+    #   mongodb:
+    #     condition: service_healthy
     restart: unless-stopped
     networks:
       - my-network
@@ -135,6 +135,25 @@ services:
       timeout: 20s
       retries: 2
 
+  # postgres:
+  #   image: postgres:14-alpine
+  #   container_name: payment_db
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER:-root}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-root123}
+  #     POSTGRES_DB: ${DB_NAME:-payment_db}
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-root}"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - payment_network
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
@@ -160,7 +179,11 @@ volumes:
     driver: local
   mysql-data:
     driver: local
+  # postgres_data:
+  #   driver: local
 
 networks:
   my-network:
     driver: bridge
+  # payment_network:
+  #   driver: bridge

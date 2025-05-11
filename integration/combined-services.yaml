@@ -85,10 +85,10 @@ spec:
       - name: product-service
         image: divyanjalinalawade/product-service:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 3004
         env:
-            - name: MONGO_URI
-              value: "mongodb://admin:admin@host.docker.internal:27017"
+        - name: KAFKA_BROKERS
+          value: host.docker.internal:9092
 
 ---
 apiVersion: v1
@@ -102,7 +102,7 @@ spec:
   ports:
     - protocol: TCP
       port: 3004
-      targetPort: 5000
+      targetPort: 3004
 
 ---
 
@@ -122,39 +122,26 @@ spec:
     spec:
       containers:
       - name: payment-service
-        image: munishbits/payment-service:v1
+        image: manish1990786/payment-service:latest
         ports:
-        - containerPort: 3003
+        - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
           value: jdbc:mysql://host.docker.internal:3306/payment_service_db
         - name: SPRING_DATASOURCE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: payment-service-secrets
-              key: SPRING_DATASOURCE_USERNAME
+          value: root
         - name: SPRING_DATASOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: payment-service-secrets
-              key: SPRING_DATASOURCE_PASSWORD
+          value: root
         - name: razorpay.webhook.secret
-          valueFrom:
-            secretKeyRef:
-              name: payment-service-secrets
-              key: razorpay.webhook.secret
+          value: ii9DlFr3BeppkKnH8Nj6tS7L
         - name: razorpay.key_id
-          valueFrom:
-            secretKeyRef:
-              name: payment-service-secrets
-              key: razorpay.key_id
+          value: rzp_test_sqbg3QV1uerVTH
         - name: razorpay.key_secret
-          valueFrom:
-            secretKeyRef:
-              name: payment-service-secrets
-              key: razorpay.key_secret
+          value: ii9DlFr3BeppkKnH8Nj6tS7L
         - name: SPRING_JPA_HIBERNATE_DDL_AUTO
           value: update
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: host.docker.internal:9092
         
 ---
 apiVersion: v1
@@ -168,4 +155,4 @@ spec:
   ports:
     - protocol: TCP
       port: 3003
-      targetPort: 3003
+      targetPort: 8080
